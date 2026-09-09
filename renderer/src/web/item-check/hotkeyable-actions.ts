@@ -121,8 +121,10 @@ export function openPoedb(item: ParsedItem) {
 }
 export function openCoE(item: ParsedItem) {
   const encodedClipboard = encodeURIComponent(item.rawText);
+  const useBeta =
+    AppConfig().enableAlphas && AppConfig().alphas.includes("beta-coe");
   window.open(
-    `https://craftofexile.com/?game=poe2&eimport=${encodedClipboard}`,
+    `https://${useBeta ? "beta." : ""}craftofexile.com/?game=poe2&eimport=${encodedClipboard}`,
   );
 }
 

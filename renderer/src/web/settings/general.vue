@@ -117,6 +117,9 @@
       <ui-checkbox v-model="libraryAlpha" v-if="enableAlphas">{{
         t(":alpha_library")
       }}</ui-checkbox>
+      <ui-checkbox v-model="betaCoeAlpha" v-if="enableAlphas">{{
+        t(":alpha_beta_coe")
+      }}</ui-checkbox>
     </div>
   </div>
 </template>
@@ -146,6 +149,23 @@ export default defineComponent({
         } else {
           props.config.alphas = props.config.alphas.filter(
             (alpha) => alpha !== "library",
+          );
+        }
+      },
+      { immediate: true },
+    );
+
+    const betaCoeAlpha = ref(
+      AppConfig().enableAlphas && AppConfig().alphas.includes("beta-coe"),
+    );
+    watch(
+      betaCoeAlpha,
+      (value) => {
+        if (value) {
+          props.config.alphas.push("beta-coe");
+        } else {
+          props.config.alphas = props.config.alphas.filter(
+            (alpha) => alpha !== "beta-coe",
           );
         }
       },
@@ -232,6 +252,7 @@ export default defineComponent({
       enableAlphas: configModelValue(() => props.config, "enableAlphas"),
       readClientLog: configModelValue(() => props.config, "readClientLog"),
       libraryAlpha,
+      betaCoeAlpha,
     };
   },
 });
