@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { setupTests } from "../vitest.setup";
-import { __testExports, init, STAT_BY_REF } from "@/assets/data";
+import { __testExports, init, STAT_BY_REF_V2 } from "@/assets/data";
 
 describe("augmentsToLookup", () => {
   setupTests();
@@ -24,36 +24,36 @@ describe("augmentsToLookup", () => {
   //   expect(AUGMENT_DATA_BY_AUGMENT["Iron Rune"].length).toBe(3);
   // });
   it("Random stats should be present", () => {
-    expect(STAT_BY_REF("Adds # to # Physical Damage")).toBeTruthy();
-    expect(STAT_BY_REF("Adds # to # Lightning Damage")).toBeTruthy();
-    expect(STAT_BY_REF("#% to Fire Resistance")).toBeTruthy();
-    expect(STAT_BY_REF("Knockback direction is reversed")).toBeTruthy();
+    expect(STAT_BY_REF_V2("Adds # to # Physical Damage")).toBeTruthy();
+    expect(STAT_BY_REF_V2("Adds # to # Lightning Damage")).toBeTruthy();
+    expect(STAT_BY_REF_V2("#% to Fire Resistance")).toBeTruthy();
+    expect(STAT_BY_REF_V2("Knockback direction is reversed")).toBeTruthy();
 
     expect(
-      STAT_BY_REF("Regenerate # Life per second per Maximum Energy Shield"),
+      STAT_BY_REF_V2("Regenerate # Life per second per Maximum Energy Shield"),
     ).toBeTruthy();
     expect(
-      STAT_BY_REF(
+      STAT_BY_REF_V2(
         "Increases and Reductions to Minion Attack Speed also affect you",
       ),
     ).toBeTruthy();
     expect(
-      STAT_BY_REF(
+      STAT_BY_REF_V2(
         "Notable Passive Skills in Radius also grant Projectiles have #% chance for an additional Projectile when Forking",
       ),
     ).toBeTruthy();
     expect(
-      STAT_BY_REF("Every Rage also grants #% increased Armour"),
+      STAT_BY_REF_V2("Every Rage also grants #% increased Armour"),
     ).toBeTruthy();
     expect(
-      STAT_BY_REF(
+      STAT_BY_REF_V2(
         "Recover #% of maximum Life for each Endurance Charge consumed",
       ),
     ).toBeTruthy();
-    expect(STAT_BY_REF("#% increased Freeze Buildup")).toBeTruthy();
-    expect(STAT_BY_REF("Has Purple Smoke")).toBeTruthy();
+    expect(STAT_BY_REF_V2("#% increased Freeze Buildup")).toBeTruthy();
+    expect(STAT_BY_REF_V2("Has Purple Smoke")).toBeTruthy();
     expect(
-      STAT_BY_REF("On Corruption, Item gains two Enchantments"),
+      STAT_BY_REF_V2("On Corruption, Item gains two Enchantments"),
     ).toBeTruthy();
   });
 });

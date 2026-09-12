@@ -1,13 +1,13 @@
 import {
   CLIENT_STRINGS as _$,
   CLIENT_STRINGS_REF as _$REF,
-  STAT_BY_MATCH_STR,
+  STAT_BY_MATCH_STR_V2,
   StatBetter,
   TRADE_STAT_BY_MATCH_STR,
 } from "@/assets/data";
-import type { StatMatcher, Stat, BaseType } from "@/assets/data";
+import type { StatMatcher, Stat, BaseType, StatGroup } from "@/assets/data";
 import { ModifierType } from "./modifiers";
-import { ItemCategory } from "./meta";
+import { ARMOUR, ItemCategory, WEAPON } from "./meta";
 
 // This file is a little messy and scary,
 // but that's how stats translations are parsed :-D
@@ -369,9 +369,94 @@ function findAndResolveTranslation(
   params: FindResolveParams,
 ): { matcher: StatMatcher; stat: Stat } | undefined {
   const { matchStr } = params;
-  const statOrGroup = STAT_BY_MATCH_STR(matchStr);
+  const statOrGroup = STAT_BY_MATCH_STR_V2(matchStr);
+  if (!statOrGroup) return undefined;
 
-  return statOrGroup;
+  let stat: Stat | undefined;
+  if (!("stats" in statOrGroup)) {
+    stat = statOrGroup;
+  } else {
+    stat = _resolveTranslation(statOrGroup, params);
+  }
+
+  if (stat) {
+    const matcher = stat.matchers.find(
+      (m) => m.string === matchStr || m.advanced === matchStr,
+    );
+    if (!matcher) return undefined;
+    return { stat, matcher };
+  }
+  return undefined;
+}
+
+export function _resolveTranslation(
+  statGroup: StatGroup,
+  params: FindResolveParams,
+): Stat | undefined {
+  const { resolve, stats } = statGroup;
+  const { matchStr, modType, itemCategory } = params;
+  if (resolve.strat === "select") {
+    // give priority to exact match
+    let idx = resolve.test.findIndex(
+      (expected) =>
+        expected !== null && testItemCategory(itemCategory ?? null, expected),
+    );
+    // fallback to any match (if it exists at all)
+    if (idx === -1) idx = resolve.test.indexOf(null);
+    return idx !== -1 ? stats[idx] : undefined;
+  }
+
+  const onTradeStats = stats.filter((stat) => modType in stat.trade.ids);
+  if (onTradeStats.length === 1) {
+    return onTradeStats[0];
+  }
+
+  if (resolve.strat === "trivial-merge") {
+    const withMatchStr = matchStr.length
+      ? onTradeStats.filter((stat) =>
+          stat.matchers.some(
+            (m) => m.string === matchStr || m.advanced === matchStr,
+          ),
+        )
+      : onTradeStats;
+    if (!withMatchStr.length) return undefined;
+    const merged = withMatchStr[0];
+    for (const stat of withMatchStr) {
+      if (merged === stat) continue;
+      _mergeTradeIdsInto(merged, stat);
+    }
+    return merged;
+  }
+}
+
+function _mergeTradeIdsInto(dest: Stat, source: Stat, prefix?: string) {
+  for (const modType in source.trade.ids) {
+    let tradeId = source.trade.ids[modType][0];
+    if (prefix) tradeId = prefix + tradeId;
+    if (modType in dest.trade.ids) {
+      if (!dest.trade.ids[modType].includes(tradeId)) {
+        dest.trade.ids[modType].push(tradeId);
+      }
+    } else {
+      dest.trade.ids[modType] = [tradeId];
+    }
+  }
+}
+
+function testItemCategory(
+  actual: ItemCategory | null,
+  expected: string,
+): boolean {
+  if (actual === null) return false;
+
+  switch (expected) {
+    case "WEAPON":
+      return WEAPON.has(actual);
+    case "ARMOUR":
+      return ARMOUR.has(actual);
+    default:
+      return expected === actual;
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

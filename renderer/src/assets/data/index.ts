@@ -9,6 +9,7 @@ import type {
   TranslationDict,
   AugmentGroup,
   CatalystGroup,
+  StatOrGroup,
 } from "./interfaces";
 import { loadClientStrings } from "../client-string-loader";
 import { useTradeData } from "@/web/background/TradeData";
@@ -71,7 +72,11 @@ export let TRADE_TAG_TO_REF = new Map<string, string>();
 export let STAT_BY_MATCH_STR: (
   name: string,
 ) => { matcher: StatMatcher; stat: Stat } | undefined = () => undefined;
-export let STAT_BY_REF: (name: string) => Stat | undefined = () => undefined;
+export let STAT_BY_MATCH_STR_V2: (
+  name: string,
+) => StatOrGroup | undefined = () => undefined;
+export let STAT_BY_REF_V2: (name: string) => StatOrGroup | undefined = () =>
+  undefined;
 export let STATS_ITERATOR: (
   includes: string,
   andIncludes?: string[],
@@ -238,7 +243,7 @@ async function loadStats(language: string) {
     ).arrayBuffer(),
   );
 
-  STAT_BY_REF = function (ref: string) {
+  STAT_BY_REF_V2 = function (ref: string) {
     let start = dataBinarySearch(
       indexRef,
       Number(fnv1a(ref, { size: 32 })),
@@ -251,7 +256,7 @@ async function loadStats(language: string) {
     return JSON.parse(ndjson.slice(start, end));
   };
 
-  STAT_BY_MATCH_STR = function (matchStr: string) {
+  STAT_BY_MATCH_STR_V2 = function (matchStr: string) {
     let start = dataBinarySearch(
       indexMatcher,
       Number(fnv1a(matchStr, { size: 32 })),
@@ -261,19 +266,60 @@ async function loadStats(language: string) {
     if (start === -1) return undefined;
     start = indexMatcher[start * INDEX_WIDTH + 1];
     const end = ndjson.indexOf("\n", start);
-    const stat = JSON.parse(ndjson.slice(start, end)) as Stat;
-
-    const matcher = stat.matchers.find(
-      (m) => m.string === matchStr || m.advanced === matchStr,
-    );
-    if (!matcher) {
+    const statOrGroup = JSON.parse(ndjson.slice(start, end)) as StatOrGroup;
+    const stats = "stats" in statOrGroup ? statOrGroup.stats : [statOrGroup];
+    if (
+      !stats.some((stat) =>
+        stat.matchers.some(
+          (m) => m.string === matchStr || m.advanced === matchStr,
+        ),
+      )
+    ) {
       // console.log('fnv1a32 collision')
       return undefined;
     }
+    return statOrGroup;
+  };
+
+  STAT_BY_MATCH_STR = function (matchStr: string) {
+    const statOrGroup = STAT_BY_MATCH_STR_V2(matchStr);
+    if (!statOrGroup) return undefined;
+
+    let stat: Stat;
+    if ("stats" in statOrGroup) {
+      const stats = statOrGroup.stats.filter((stat) =>
+        stat.matchers.some(
+          (m) => m.string === matchStr || m.advanced === matchStr,
+        ),
+      );
+      if (stats.length !== 1) return undefined;
+      stat = stats[0];
+    } else {
+      stat = statOrGroup;
+    }
+    const matcher = stat.matchers.find(
+      (m) => m.string === matchStr || m.advanced === matchStr,
+    )!;
     return { stat, matcher };
   };
 
   STATS_ITERATOR = ndjsonFindLines<Stat>(ndjson);
+}
+
+export function pseudoStatByRef(ref: string): Stat | undefined {
+  const statOrGroup = STAT_BY_REF_V2(ref);
+  if (statOrGroup != null && "stats" in statOrGroup) {
+    return statOrGroup.stats.find(
+      (stat) => stat.ref === ref && "pseudo" in stat.trade.ids,
+    );
+  }
+  return statOrGroup;
+}
+
+export function resolveFirstStatRef(ref: string): Stat {
+  const statOrGroup = STAT_BY_REF_V2(ref)!;
+  const dbStats = "stats" in statOrGroup ? statOrGroup.stats : [statOrGroup];
+  return dbStats.filter((stat) => stat.ref === ref)[0];
 }
 
 // assertion, to avoid regressions in stats.ndjson
@@ -298,7 +344,7 @@ export async function init(lang: string) {
   const missing = [];
 
   for (const text of DELAYED_STAT_VALIDATION) {
-    if (STAT_BY_REF(text) == null) {
+    if (STAT_BY_REF_V2(text) == null) {
       // throw new Error(`Cannot find stat: ${text}`);
       missing.push(text);
       failed = true;

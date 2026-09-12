@@ -18,7 +18,11 @@ import {
   RATE_LIMIT_RULES,
   preventQueueCreation,
 } from "./common";
-import { STAT_BY_REF, CLIENT_STRINGS as _$ } from "@/assets/data";
+import {
+  pseudoStatByRef,
+  CLIENT_STRINGS as _$,
+  resolveFirstStatRef,
+} from "@/assets/data";
 import { RateLimiter } from "./RateLimiter";
 import { ModifierType } from "@/parser/modifiers";
 import { Cache } from "./Cache";
@@ -864,7 +868,7 @@ export function createTradeRequest(
   for (const stat of stats) {
     if (stat.tradeId[0] === "item.has_empty_modifier") {
       const TARGET_ID = {
-        EMPTY_MODIFIERS: STAT_BY_REF(
+        EMPTY_MODIFIERS: pseudoStatByRef(
           TOTAL_MODS_TEXT.EMPTY_MODIFIERS[stat.option!.value],
         )!.trade.ids[ModifierType.Pseudo][0],
       };
@@ -887,9 +891,8 @@ export function createTradeRequest(
       stat.statRef === "#% increased Charge Recovery" &&
       !stats.some((s) => s.statRef === "#% increased effect")
     ) {
-      const reducedEffectId = STAT_BY_REF("#% increased effect")!.trade.ids[
-        ModifierType.Explicit
-      ][0];
+      const reducedEffectId = resolveFirstStatRef("#% increased effect")!.trade
+        .ids[ModifierType.Explicit][0];
       query.stats.push({
         type: "not",
         disabled: stat.disabled,
@@ -908,10 +911,14 @@ export function createTradeRequest(
         Object.values(ids)
           .flat()
           .map((id) => ({ id }));
-      const fireIds = mapIds(STAT_BY_REF("Adds # to # Fire Damage")!.trade.ids);
-      const coldIds = mapIds(STAT_BY_REF("Adds # to # Cold Damage")!.trade.ids);
+      const fireIds = mapIds(
+        resolveFirstStatRef("Adds # to # Fire Damage")!.trade.ids,
+      );
+      const coldIds = mapIds(
+        resolveFirstStatRef("Adds # to # Cold Damage")!.trade.ids,
+      );
       const lightningIds = mapIds(
-        STAT_BY_REF("Adds # to # Lightning Damage")!.trade.ids,
+        resolveFirstStatRef("Adds # to # Lightning Damage")!.trade.ids,
       );
 
       const selectedType = stat.option!.value as ItemIsElementalModifier;

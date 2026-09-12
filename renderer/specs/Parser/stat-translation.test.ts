@@ -10,7 +10,7 @@ vi.mock("@/assets/data", async (importOriginal) => {
     ...actual,
     init: vi.fn(),
     CLIENT_STRINGS: {},
-    STAT_BY_MATCH_STR: vi.fn(),
+    STAT_BY_MATCH_STR_V2: vi.fn(),
     TRADE_STAT_BY_MATCH_STR: vi.fn(),
     StatBetter: { PositiveRoll: 1 },
   };
@@ -70,7 +70,7 @@ describe("tryParseTranslation", () => {
   });
 
   it("should return undefined if no translation is found", () => {
-    vi.mocked(data.STAT_BY_MATCH_STR).mockReturnValue(undefined);
+    vi.mocked(data.STAT_BY_MATCH_STR_V2).mockReturnValue(undefined);
     vi.mocked(data.TRADE_STAT_BY_MATCH_STR).mockReturnValue(undefined);
 
     const result = __testExports.tryParseTranslation(
@@ -80,15 +80,12 @@ describe("tryParseTranslation", () => {
     );
 
     expect(result).toBeUndefined();
-    expect(data.STAT_BY_MATCH_STR).toHaveBeenCalled();
+    expect(data.STAT_BY_MATCH_STR_V2).toHaveBeenCalled();
     expect(data.TRADE_STAT_BY_MATCH_STR).toHaveBeenCalled();
   });
 
   it("should not call trade stats if stat found in normal stats", () => {
-    vi.mocked(data.STAT_BY_MATCH_STR).mockReturnValue({
-      stat: PHYS_DAMAGE_STAT,
-      matcher: PHYS_DAMAGE_STAT.matchers[0],
-    });
+    vi.mocked(data.STAT_BY_MATCH_STR_V2).mockReturnValue(PHYS_DAMAGE_STAT);
     vi.mocked(data.TRADE_STAT_BY_MATCH_STR).mockReturnValue(undefined);
 
     const result = __testExports.tryParseTranslation(
@@ -98,12 +95,12 @@ describe("tryParseTranslation", () => {
     );
 
     expect(result).toBeDefined();
-    expect(data.STAT_BY_MATCH_STR).toHaveBeenCalled();
-    expect(data.TRADE_STAT_BY_MATCH_STR).not.toHaveBeenCalled();
+    expect(data.STAT_BY_MATCH_STR_V2).toHaveBeenCalled();
+    expect(data.TRADE_STAT_BY_MATCH_STR).toHaveBeenCalled();
   });
 
   it("should give simple parsed stat if match string fails but trade stat works", () => {
-    vi.mocked(data.STAT_BY_MATCH_STR).mockReturnValue(undefined);
+    vi.mocked(data.STAT_BY_MATCH_STR_V2).mockReturnValue(undefined);
     vi.mocked(data.TRADE_STAT_BY_MATCH_STR).mockReturnValue(
       PHYS_DAMAGE_STAT.trade.ids,
     );
@@ -115,17 +112,14 @@ describe("tryParseTranslation", () => {
     );
 
     expect(result).toBeDefined();
-    expect(data.STAT_BY_MATCH_STR).toHaveBeenCalled();
+    expect(data.STAT_BY_MATCH_STR_V2).toHaveBeenCalled();
     expect(data.TRADE_STAT_BY_MATCH_STR).toHaveBeenCalled();
   });
 
   it("should parse roll from stat, when by match str", () => {
-    vi.mocked(data.STAT_BY_MATCH_STR).mockImplementation((name) => {
+    vi.mocked(data.STAT_BY_MATCH_STR_V2).mockImplementation((name) => {
       if (!name.startsWith("#")) return;
-      return {
-        stat: PHYS_DAMAGE_STAT,
-        matcher: PHYS_DAMAGE_STAT.matchers[0],
-      };
+      return PHYS_DAMAGE_STAT;
     });
     vi.mocked(data.TRADE_STAT_BY_MATCH_STR).mockReturnValue(undefined);
 
@@ -141,11 +135,11 @@ describe("tryParseTranslation", () => {
     expect(result?.translation).toBe(PHYS_DAMAGE_STAT.matchers[0]);
     expect(result?.roll?.value).toBe(180);
 
-    expect(data.STAT_BY_MATCH_STR).toHaveBeenCalled();
+    expect(data.STAT_BY_MATCH_STR_V2).toHaveBeenCalled();
   });
 
   it("should parse roll from stat, when by trade stat", () => {
-    vi.mocked(data.STAT_BY_MATCH_STR).mockReturnValue(undefined);
+    vi.mocked(data.STAT_BY_MATCH_STR_V2).mockReturnValue(undefined);
     vi.mocked(data.TRADE_STAT_BY_MATCH_STR).mockImplementation((name) => {
       if (!name.startsWith("#")) return;
       return PHYS_DAMAGE_STAT.trade.ids;
@@ -163,17 +157,14 @@ describe("tryParseTranslation", () => {
     expect(result?.translation.string).toBe("#% increased Physical Damage");
     expect(result?.roll?.value).toBe(180);
 
-    expect(data.STAT_BY_MATCH_STR).toHaveBeenCalled();
+    expect(data.STAT_BY_MATCH_STR_V2).toHaveBeenCalled();
     expect(data.TRADE_STAT_BY_MATCH_STR).toHaveBeenCalledTimes(2);
   });
 
   it("should handle legacy rolls", () => {
-    vi.mocked(data.STAT_BY_MATCH_STR).mockImplementation((name) => {
+    vi.mocked(data.STAT_BY_MATCH_STR_V2).mockImplementation((name) => {
       if (!name.startsWith("#")) return;
-      return {
-        stat: PHYS_DAMAGE_STAT,
-        matcher: PHYS_DAMAGE_STAT.matchers[0],
-      };
+      return PHYS_DAMAGE_STAT;
     });
     vi.mocked(data.TRADE_STAT_BY_MATCH_STR).mockReturnValue(undefined);
 
@@ -190,14 +181,11 @@ describe("tryParseTranslation", () => {
     expect(result?.roll?.value).toBe(220);
     expect(result?.roll?.legacy).toBeTruthy();
 
-    expect(data.STAT_BY_MATCH_STR).toHaveBeenCalled();
+    expect(data.STAT_BY_MATCH_STR_V2).toHaveBeenCalled();
   });
 
   it("should prefer match str on exact match", () => {
-    vi.mocked(data.STAT_BY_MATCH_STR).mockReturnValue({
-      stat: EXACT_MATCH_STAT,
-      matcher: EXACT_MATCH_STAT.matchers[0],
-    });
+    vi.mocked(data.STAT_BY_MATCH_STR_V2).mockReturnValue(EXACT_MATCH_STAT);
     vi.mocked(data.TRADE_STAT_BY_MATCH_STR).mockReturnValue(
       EXACT_MATCH_STAT.trade.ids,
     );
@@ -213,12 +201,12 @@ describe("tryParseTranslation", () => {
     expect(result?.translation).toBe(EXACT_MATCH_STAT.matchers[0]);
     expect(result?.roll).toBeUndefined();
 
-    expect(data.STAT_BY_MATCH_STR).toHaveBeenCalled();
+    expect(data.STAT_BY_MATCH_STR_V2).toHaveBeenCalled();
     expect(data.TRADE_STAT_BY_MATCH_STR).not.toHaveBeenCalled();
   });
 
   it("should handle exact match with trade stat", () => {
-    vi.mocked(data.STAT_BY_MATCH_STR).mockReturnValue(undefined);
+    vi.mocked(data.STAT_BY_MATCH_STR_V2).mockReturnValue(undefined);
     vi.mocked(data.TRADE_STAT_BY_MATCH_STR).mockReturnValue(
       EXACT_MATCH_STAT.trade.ids,
     );
@@ -232,15 +220,12 @@ describe("tryParseTranslation", () => {
     expect(result).toBeDefined();
     expect(result?.roll).toBeUndefined();
 
-    expect(data.STAT_BY_MATCH_STR).toHaveBeenCalled();
+    expect(data.STAT_BY_MATCH_STR_V2).toHaveBeenCalled();
     expect(data.TRADE_STAT_BY_MATCH_STR).toHaveBeenCalled();
   });
 
   it("should handle options in match str", () => {
-    vi.mocked(data.STAT_BY_MATCH_STR).mockReturnValue({
-      stat: OPTION_STAT,
-      matcher: OPTION_STAT.matchers[0],
-    });
+    vi.mocked(data.STAT_BY_MATCH_STR_V2).mockReturnValue(OPTION_STAT);
     vi.mocked(data.TRADE_STAT_BY_MATCH_STR).mockReturnValue(
       OPTION_STAT.trade.ids,
     );
@@ -256,12 +241,12 @@ describe("tryParseTranslation", () => {
     expect(result?.translation).toBe(OPTION_STAT.matchers[0]);
     expect(result?.roll?.value).toBe(2);
 
-    expect(data.STAT_BY_MATCH_STR).toHaveBeenCalled();
+    expect(data.STAT_BY_MATCH_STR_V2).toHaveBeenCalled();
     expect(data.TRADE_STAT_BY_MATCH_STR).not.toHaveBeenCalled();
   });
 
   it("should handle options in trade stat", () => {
-    vi.mocked(data.STAT_BY_MATCH_STR).mockReturnValue(undefined);
+    vi.mocked(data.STAT_BY_MATCH_STR_V2).mockReturnValue(undefined);
     vi.mocked(data.TRADE_STAT_BY_MATCH_STR).mockReturnValue({
       explicit: ["explicit.stat_3891355829|2"],
     });
@@ -277,7 +262,7 @@ describe("tryParseTranslation", () => {
     expect(result?.stat.trade.ids).toHaveProperty("explicit");
     expect(result?.stat.trade.ids.explicit).toHaveLength(1);
 
-    expect(data.STAT_BY_MATCH_STR).toHaveBeenCalled();
+    expect(data.STAT_BY_MATCH_STR_V2).toHaveBeenCalled();
     expect(data.TRADE_STAT_BY_MATCH_STR).toHaveBeenCalledOnce();
   });
 });

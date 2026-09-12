@@ -1,4 +1,4 @@
-import { STAT_BY_REF } from "@/assets/data";
+import { resolveFirstStatRef } from "@/assets/data";
 import { ItemCategory } from "@/parser";
 import { ParsedModifier } from "@/parser/advanced-mod-desc";
 import { ModifierType, StatCalculated } from "@/parser/modifiers";
@@ -62,7 +62,7 @@ export function createParsedStat(
   statRef: string,
   value: number | [number, number],
 ): ParsedStat {
-  const stat = STAT_BY_REF(statRef)!;
+  const stat = resolveFirstStatRef(statRef)!;
 
   return {
     stat,
