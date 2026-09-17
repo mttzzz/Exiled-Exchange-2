@@ -39,6 +39,7 @@ export interface Stat {
   fromAreaMods?: true;
   fromUberAreaMods?: true;
   fromHeistAreaMods?: true;
+  isSocketBound?: true;
   anointments?: Array<{ roll: number; oils: string }>; // Ring anointments
   trade: {
     inverted?: true;
@@ -60,6 +61,10 @@ export type StatOrGroup = Stat | StatGroup;
 export type StatGroupResolver =
   | {
       strat: "select";
+      test: Array<string | null>;
+    }
+  | {
+      strat: "filter";
       test: Array<string | null>;
     }
   | {

@@ -402,8 +402,36 @@ export function _resolveTranslation(
         expected !== null && testItemCategory(itemCategory ?? null, expected),
     );
     // fallback to any match (if it exists at all)
-    if (idx === -1) idx = resolve.test.indexOf(null);
+    if (idx === -1) {
+      idx = resolve.test.indexOf(null);
+    }
     return idx !== -1 ? stats[idx] : undefined;
+  }
+
+  if (resolve.strat === "filter") {
+    // give priority to exact match
+    let list = resolve.test.map(
+      (expected) =>
+        expected !== null && testItemCategory(itemCategory ?? null, expected),
+    );
+    // fallback to any match (if it exists at all)
+    if (list.length === 0) {
+      list = resolve.test.map((expected) => expected === null);
+    }
+
+    // for each index where true, test matchStr, return if found
+    for (let i = 0; i < list.length; i++) {
+      if (list[i]) {
+        const stat = stats[i];
+        if (
+          stat.matchers.some(
+            (m) => m.string === matchStr || m.advanced === matchStr,
+          )
+        ) {
+          return stat;
+        }
+      }
+    }
   }
 
   const onTradeStats = stats.filter((stat) => modType in stat.trade.ids);
