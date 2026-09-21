@@ -32,7 +32,7 @@
 - **Релиз форка = форс-пуш тега `vX.Y.Z`** (тег на коммите бампа, после push master).
 - **Бамп версии — 5 файлов** (hook `versionCheck.py`): `main/package.json`, `main/package-lock.json` (2 места), `README.md` (Setup-badge), `bug-report.yml` (верх списка), docs-конфиг (`appVersion`).
 - Локальная проверка перед коммитом: `python3 versionCheck.py`.
-- Publish-цель electron-builder = `repository.url` из `main/package.json` (на форке указывает на форк). После tag-push инсталляторы появляются в релизе: `https://github.com/mttzzz/Exiled-Exchange-2/releases`.
+- Publish-цель electron-builder = `repository.url` из `main/package.json` (на форке — форк). Токен — секрет `RELEASE_TOKEN` (`GITHUB_TOKEN` форка на релизы не хватает → 403). Инсталляторы: `https://github.com/mttzzz/Exiled-Exchange-2/releases`.
 - **Windows-build падает на последнем шаге «updating asar integrity executable resource»** — нужен wine (rcedit), в runner-поде uid 1000 без root/sudo: не поставить. Каталог `main/dist/win-unpacked/` несмотря на ошибку полный и рабочий (asar + prebuilds win32-x64 на месте) — asar-integrity это optional hardening-ресурс Electron, на запуск не влияет. Упаковывать: `tar -czf ee2-win.tar.gz win-unpacked`. Передача на Windows-бокс — через `/mnt/poe2` (RW, owner mttzzz).
 - **Данных у проекта нет** (не web-сервер): lane = только runner; `lane db pull`/`reset` здесь не используются.
 - `main/package.json: version` — версия релиза; `testUpdate.sh` — скрипт апстрима, дублирует renderer+main build.
