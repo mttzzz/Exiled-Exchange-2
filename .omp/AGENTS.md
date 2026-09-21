@@ -28,10 +28,9 @@
 | Windows portable | `lane exec -- bash -lc 'cd main && npx electron-builder build --win --dir --publish never'` |
 
 ### Внимания заслуживает
-
-- **npm здесь новый (allow-scripts):** postinstall-скрипты исполняются только для пакетов из `allowScripts` в `package.json` (установлено апстримом: electron, esbuild, uiohook-napi, electron-winstaller). Если появляется native-пакет — добавить его в `allowScripts` того package.json, иначе скрипт молча не выполнится.
-- **Windows-build падает на последнем шаге «updating asar integrity executable resource»** — нужен wine (rcedit), в runner-поде uid 1000 без root/sudo: не поставить. Каталог `main/dist/win-unpacked/` НОСмотря на ошибку полный и рабочий (asar + prebuilds win32-x64 на месте) — asar-integrity это optional hardening-ресурс Electron, на запуск не влияет. Упаковывать: `tar -czf ee2-win.tar.gz win-unpacked`. Передача на Windows-бокс — через `/mnt/poe2` (RW, owner mttzzz).
-- **Официальные инсталляторы (nsis/portable):** либо (а) в форке в GitHub UI один клик «Enable workflows» (Actions-таб; workflow_runs=0, gh CLI включить не умеет), после этого push master → артефакты в Actions форка, tag + draft release → инсталляторы в releases; либо (б) wine на Linux-машине с root'ом.
+- **CI форка ВКЛЮЧЕНА (01.09.2026).** `push master` → run `Build` (matrix win/ubuntu/macos) + `test.yml` (lint+vitest). Артефакты run'ов живут 1 день — не копировать как источник.
+- **Официальные инсталляторы (nsis/portable/appimage/dmg):** `npm run package -- -p onTagOrDraft` публикует в GitHub-release ТОЛЬКО при теге на HEAD-коммите или draft-релизе. Флоу: бамп `version` в `main/package.json` → commit → `git tag vX.Y.Z` на этот коммит → `git push origin master` (push-триггер только на master, `tags-ignore: '**'` — тег сам запуск не стартует) → на релизе форка появляются инсталляторы: `https://github.com/mttzzz/Exiled-Exchange-2/releases`.
+- **Windows-build падает на последнем шаге «updating asar integrity executable resource»** — нужен wine (rcedit), в runner-поде uid 1000 без root/sudo: не поставить. Каталог `main/dist/win-unpacked/` несмотря на ошибку полный и рабочий (asar + prebuilds win32-x64 на месте) — asar-integrity это optional hardening-ресурс Electron, на запуск не влияет. Упаковывать: `tar -czf ee2-win.tar.gz win-unpacked`. Передача на Windows-бокс — через `/mnt/poe2` (RW, owner mttzzz).
 - **Данных у проекта нет** (не web-сервер): lane = только runner; `lane db pull`/`reset` здесь не используются.
 - `main/package.json: version` — версия релиза; `testUpdate.sh` — скрипт апстрима, дублирует renderer+main build.
 - Временные файлы — только `/.tmp/` (в .gitignore).
