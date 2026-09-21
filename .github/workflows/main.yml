@@ -4,11 +4,8 @@ on:
   push:
     branches:
       - 'master'
-    tags-ignore:
-      - '**'
-    paths-ignore:
-      - 'docs/**'
-      - README.md
+    tags:
+      - 'v*'
 
 jobs:
   renderer:
