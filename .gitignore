@@ -1,6 +1,8 @@
 node_modules
 */dist/**
 
+# local scratch (AGENTS: временное только в /.tmp/)
+.tmp/
 # local env files
 .env.local
 .env.*.local
