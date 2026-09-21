@@ -65,7 +65,9 @@ export type UpdateInfo =
   | {
       state: "update-not-available" | "error";
       checkedAt: number;
-    };
+      /** Actual updater error text, if known. */
+      message?: string;
+  };
 
 export interface HostState {
   contents: string | null;

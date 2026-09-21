@@ -1,5 +1,6 @@
 import { autoUpdater } from "electron-updater";
 import type { ServerEvents } from "./server";
+import type { Logger } from "./RemoteLogger";
 import type { UpdateInfo } from "../../ipc/types";
 
 export class AppUpdater {
@@ -23,7 +24,7 @@ export class AppUpdater {
     });
   }
 
-  constructor(private server: ServerEvents) {
+  constructor(private server: ServerEvents, private logger?: Logger) {
     setInterval(this.check, 16 * 60 * 60 * 1000);
 
     this.server.onEventAnyClient("CLIENT->MAIN::user-action", ({ action }) => {
@@ -57,8 +58,25 @@ export class AppUpdater {
     autoUpdater.on("update-not-available", () => {
       this.info = { state: "update-not-available", checkedAt: Date.now() };
     });
-    autoUpdater.on("error", () => {
-      this.info = { state: "error", checkedAt: Date.now() };
+    autoUpdater.on("error", (err: unknown) => {
+      // electron-updater wraps the real cause in `.error`
+      const wrapped =
+        err && typeof err === "object" && "error" in err ? err.error : null;
+      const msg = (v: unknown): string | null => {
+        if (typeof v === "string") return v;
+        if (v && typeof v === "object" && "message" in v) {
+          const m = v.message;
+          return typeof m === "string" && m ? m : null;
+        }
+        return null;
+      };
+      const detail = msg(wrapped) ?? msg(err);
+      this.logger?.write(`updater error: ${detail ?? "unknown error"}`);
+      this.info = {
+        state: "error",
+        checkedAt: Date.now(),
+        message: detail ?? "unknown error",
+      };
     });
     autoUpdater.on("update-downloaded", (info: { version: string }) => {
       this.info = { state: "update-downloaded", version: info.version };

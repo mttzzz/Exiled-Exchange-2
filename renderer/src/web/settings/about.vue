@@ -7,13 +7,13 @@
       <div class="flex gap-2">
         <a
           class="border-b"
-          href="https://github.com/Kvan7/exiled-exchange-2/releases"
+          href="https://github.com/mttzzz/Exiled-Exchange-2/releases"
           target="_blank"
           >{{ t("app.release_notes") }}</a
         >
         <a
           class="border-b"
-          href="https://github.com/Kvan7/exiled-exchange-2/issues"
+          href="https://github.com/mttzzz/Exiled-Exchange-2/issues"
           target="_blank"
           >{{ t("app.report_bug") }}</a
         >
@@ -73,7 +73,7 @@ function checkForUpdates() {
 }
 
 function openDownloadPage() {
-  window.open("https://github.com/Kvan7/exiled-exchange-2/releases");
+  window.open("https://github.com/mttzzz/Exiled-Exchange-2/releases");
 }
 
 function quitAndInstall() {
@@ -115,7 +115,7 @@ export default defineComponent({
         case "error":
           return {
             str1: t("updates.maybe_outdated"),
-            str2: t("updates.error"),
+            str2: rawInfo.message ?? t("updates.error"),
             action: openDownloadPage,
             actionText: t("updates.downloads_page"),
           };
