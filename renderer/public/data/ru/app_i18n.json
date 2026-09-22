@@ -126,7 +126,12 @@
     "uses_remaining": "Осталось использовать: {0}",
     "victorious": "Победный",
     "cowardly": "Трусливый",
-    "deadly": "Смертельный"
+    "deadly": "Смертельный",
+    "ascendancy_points": "Очки восхождения: {0}",
+    "has_elemental_cold_affix": "Холод",
+    "has_elemental_fire_affix": "Огонь",
+    "has_elemental_lightning_affix": "Молния",
+    "mod_desecrated": "Осквернённое"
   },
   "item_category": {
     "prop": "Категория: {0}",
@@ -172,7 +177,10 @@
     "weapon_spear": "Копьё",
     "weapon_flail": "Кистень",
     "armour_buckler": "Баклер",
-    "weapon_talisman": "Талисман"
+    "weapon_talisman": "Талисман",
+    "armour_focus": "Фокус",
+    "map": "Карта",
+    "map_tablet": "Плитка"
   },
   "filters": {
     "selected_some": "Св-ва: {0} из {1}",
@@ -216,7 +224,13 @@
     "tag_added_rune": "усилителей",
     "tag_sanctum": "Святилище",
     "tag_desecrated": "Очернённый",
-    "grade": "Грейд {0}"
+    "grade": "Грейд {0}",
+    "empty_rune_socket": "Пустое гнездо для усиления",
+    "fill_rune_iron": "Заполнить руну (железо)",
+    "hidden_explicit_toggle": "Явный",
+    "selected_full_runes": "Все усилители заняты",
+    "selected_open_runes": "{0} из {1}, пустует",
+    "tag_skill": "Умение"
   },
   "online_filter": {
     "offline_toggle": "Офлайн и Онлайн",
@@ -286,7 +300,9 @@
     "target_replica": "Копии",
     "too_many_": "Найдено слишком много предметов, уточните название.",
     "not_found": "Не найдено ни одного предмета.",
-    "ocr_gems_key": "Выполнить OCR для гема"
+    "ocr_gems_key": "Выполнить OCR для гема",
+    "target_base_item": "Базовые предметы",
+    "target_unique": "Уникальные предметы"
   },
   "map_check": {
     "name": "Проверка карты",
@@ -317,7 +333,12 @@
     "getting_price_from": "с poe.ninja …",
     "you_have": "В наличии",
     "stack": "Стак",
-    "fix_complex_query": "Отключите \"Use pseudo mods\" в настройках или залогиньтесь во встроенном браузере"
+    "fix_complex_query": "Отключите \"Use pseudo mods\" в настройках или залогиньтесь во встроенном браузере",
+    "added_augments": "Добавленная стоимость усилителей:",
+    "filter_exalt_divine": "Фильтр по Сферам Возвышения / Божественным",
+    "gem_sockets": "Гнёзда",
+    "results_warn_message": "Торговый сайт скрывает результаты между {0} и {1} Сферами Возвышения",
+    "results_warn_tooltip": "Включите «Только Сферы Возвышения» в фильтрах онлайн. Предупреждение можно отключить в настройках."
   },
   "settings": {
     "title": "Настройки - Exiled Exchange 2",
@@ -387,7 +408,9 @@
     "tier_numbering": "Стиль нумерации тиров",
     "tier_numbering_poe1": "PoE1 (меньше - лучше)",
     "tier_numbering_poe2": "PoE2 (больше - лучше)",
-    "tier_numbering_help": "Во избежание недоразумений связанных с системой наименований в игре, тиры из PoE1 будут называться \"Grade\" вместо \"Tier\". "
+    "tier_numbering_help": "Во избежание недоразумений связанных с системой наименований в игре, тиры из PoE1 будут называться \"Grade\" вместо \"Tier\". ",
+    "always_show_tier": "Всегда показывать тир",
+    "open_editor_above": "Открывать выбор гнезда усилителя вверх"
   },
   "poe2_new": {
     "beta_warning": "Функционал для PoE2 находится в стадии бета тестирования и не всегда работает так, как задумано.",
@@ -431,5 +454,9 @@
     "tip_29": "Вы можете добавить горячие клавиши для пользовательских команд чата в настройках"
   },
   "map.mods.uber": "T17",
-  "Magic": "Магический"
+  "Magic": "Магический",
+  "item_editor.armour": "Доспехи",
+  "item_editor.caster_weapon": "Чародейское оружие",
+  "item_editor.marital_weapon": "Боевое оружие",
+  "item_editor.sceptre": "Скипетры"
 }
