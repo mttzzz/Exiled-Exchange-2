@@ -1,6 +1,6 @@
 # ![Perfect Jewelers Orb](./renderer/public/images/jeweler.png) Exiled Exchange 2
 
-[![GitHub Downloads (specific asset, latest release)](https://img.shields.io/github/downloads/mttzzz/exiled-exchange-2/latest/Exiled-Exchange-2-Setup-0.16.5.exe?style=plastic)](https://github.com/mttzzz/Exiled-Exchange-2/releases/latest)
+[![GitHub Downloads (specific asset, latest release)](https://img.shields.io/github/downloads/mttzzz/exiled-exchange-2/latest/Exiled-Exchange-2-Setup-0.16.7.exe?style=plastic)](https://github.com/mttzzz/Exiled-Exchange-2/releases/latest)
 [![GitHub Tag](https://img.shields.io/github/v/tag/kvan7/exiled-exchange-2?style=plastic&label=latest%20version)](https://github.com/Kvan7/Exiled-Exchange-2/releases/latest)
 [![GitHub commits since latest release (branch)](https://img.shields.io/github/commits-since/kvan7/exiled-exchange-2/latest/dev?style=plastic)](https://github.com/Kvan7/Exiled-Exchange-2/commits/dev/)
 [![Translation status](https://translate.codeberg.org/widget/exiled-exchange-2/svg-badge.svg)](https://translate.codeberg.org/engage/exiled-exchange-2/)
